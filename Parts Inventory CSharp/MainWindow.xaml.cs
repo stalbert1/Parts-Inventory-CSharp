@@ -106,6 +106,8 @@ namespace Parts_Inventory_CSharp
                         connection.CreateTable<Part>();
                         //Once inserted into the database is where it will pickup the Id field.
                         connection.Insert(tempPart);
+
+                        MessageBox.Show($"The {tempPart.PartDescription} was added to the database.");
                     }
 
                     ReadDataBase();
@@ -113,7 +115,8 @@ namespace Parts_Inventory_CSharp
                 }
                 else
                 {
-                    Console.WriteLine($"Part is already in the database\n{returningPart.ToString()}");
+                    //Console.WriteLine($"Part is already in the database\n{returningPart.ToString()}");
+                    MessageBox.Show($"The Part is already in the database, or has an empty part number or model number.\n{returningPart.ToString()}");
                 }
 
             }
@@ -134,6 +137,9 @@ namespace Parts_Inventory_CSharp
                 //Will need to determine if the part already exist in the database before allowing entry
                 using (SQLiteConnection connection = new SQLiteConnection(App.dataBasePath))
                 {
+                //create a variable to keep track of how many parts were added to the database
+                var numPartsAdded = 0;
+
                     foreach (var part in partsListImport)
                     {
 
@@ -153,14 +159,15 @@ namespace Parts_Inventory_CSharp
                             //Once inserted into the database is where it will pickup the Id field.
 
                             connection.Insert(tempPart);
-
-                            //Good place for a show dialogue box showing how many parts were successflly entered.
+                            numPartsAdded++;
 
                         }
 
                     }
   
                     }
+
+                MessageBox.Show($"There were {numPartsAdded} parts added to the database");
                 }
 
             ReadDataBase();
@@ -185,11 +192,26 @@ namespace Parts_Inventory_CSharp
             }
 
             //should show window showing that the save was a success.
+            MessageBox.Show("The CSV file was saved, it should be in your Documents Directory.");
 
         }
 
         private void btnDeletePart_Click(object sender, RoutedEventArgs e)
         {
+
+            //Will need to ensure that a part is selected first.
+
+            //Maybe step 1 is to disable the delete button 
+             
+            //step 2 is when a single item is selected (single item selection true) the button becomes enabled
+
+            //Need to ask for confirmation before deleting.
+
+            //I would imagine this is where the ID field in the part class comes in handy 
+
+            //delete item based on ID. Agian ask for confirmation from user before doing this.
+
+
 
             //Will implement deleting a part from the table then to read the database.
 
