@@ -67,6 +67,7 @@
 
         <!--In the code behind will bind this list view to a list of parts.-->
         <ListView x:Name="partsListView"
+                  SelectionChanged="partsListView_SelectionChanged"
                   Grid.Row="2"
                   Grid.ColumnSpan="4"
                   FontSize="14"

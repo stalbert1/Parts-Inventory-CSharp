@@ -32,18 +32,32 @@ namespace Parts_Inventory_CSharp
         //This will be the returning part coming back from the add window.
         public Part returningPart;
 
+        //This will keep hold of the currently selected part for updating or deleting
+        private Part selectedPart;
+
         //added sqlite-net-pcl .nuget package right click references manage Nuget Packages.
 
         public MainWindow()
         {
             InitializeComponent();
-
-            //Will need to look at the data base and set the list to the database.
             ReadDataBase();
-            
-            
- 
+            //btnDeletePart.IsEnabled = false;
+            PartIsNotSelected();
 
+        }
+
+        //Created these 2 methods because when a part is selected or unselected will need to change 2 things
+        private void PartIsSelected()
+        {
+            btnAddPart.Content = "Update Part";
+            btnDeletePart.IsEnabled = true;
+
+        }
+
+        private void PartIsNotSelected()
+        {
+            btnAddPart.Content = "Add Part";
+            btnDeletePart.IsEnabled = false;
         }
 
        
@@ -77,14 +91,14 @@ namespace Parts_Inventory_CSharp
                                                 p.Comments.ToLower().Contains(txtFilter.Text)).ToList();
             partsListView.ItemsSource = filteredList;
             lblSummary.Content = $"{filteredList.Count} parts listed.";
+
+            PartIsNotSelected();
         }
 
-        private void btnAddPart_Click(object sender, RoutedEventArgs e)
+        private void AddPart()
         {
-            //AddPartWindow partWindow = new AddPartWindow();
             AddPartWindow partWindow = new AddPartWindow(partsList);
 
-            
             //partWindow.Show();
             partWindow.ShowDialog();
 
@@ -123,6 +137,32 @@ namespace Parts_Inventory_CSharp
 
             //if so can i set it back to null?
             returningPart = null;
+
+        }
+
+        private void UpdatePart()
+        {
+            Console.WriteLine("Update Part");
+            AddPartWindow partWindow = new AddPartWindow(selectedPart);
+
+            partWindow.ShowDialog();
+
+            //If the database gets updated in the update part call will need to read
+            ReadDataBase();
+
+        }
+
+        private void btnAddPart_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnAddPart.Content == "Add Part")
+            {
+                AddPart();
+            }
+            else
+            {
+                UpdatePart();
+            }
+            
 
         }
 
@@ -199,21 +239,36 @@ namespace Parts_Inventory_CSharp
         private void btnDeletePart_Click(object sender, RoutedEventArgs e)
         {
 
+            
             //Will need to ensure that a part is selected first.
+            if (selectedPart != null)
+            {
+                
+                //give a selection to do this or not.
+                MessageBox.Show($"The {selectedPart.PartDescription} will be deleted from the database.");
 
-            //Maybe step 1 is to disable the delete button 
-             
-            //step 2 is when a single item is selected (single item selection true) the button becomes enabled
+                using (SQLiteConnection connection = new SQLiteConnection(App.dataBasePath))
+                {
+                    connection.CreateTable<Part>();
+                    //Will need Id field to delete.
+                    connection.Delete(selectedPart);
+                }
 
-            //Need to ask for confirmation before deleting.
+            }
 
-            //I would imagine this is where the ID field in the part class comes in handy 
+            ReadDataBase();
+            //btnDeletePart.IsEnabled = false;
+            PartIsNotSelected();
 
-            //delete item based on ID. Agian ask for confirmation from user before doing this.
+        }
 
+        private void partsListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //btnDeletePart.IsEnabled = true;
+            PartIsSelected();
 
+            selectedPart = (Part)partsListView.SelectedItem;
 
-            //Will implement deleting a part from the table then to read the database.
 
         }
     }

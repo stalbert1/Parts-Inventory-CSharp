@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Parts_Inventory_CSharp.Model;
+using SQLite;
 
 namespace Parts_Inventory_CSharp
 {
@@ -20,6 +21,9 @@ namespace Parts_Inventory_CSharp
     /// </summary>
     public partial class AddPartWindow : Window
     {
+
+        //this will be used to update a part if passed in from the constructor.
+        private Part part;
 
         //private string test;
 
@@ -58,12 +62,33 @@ namespace Parts_Inventory_CSharp
 
         }
 
+        //This is the constructor that will be called when you want to update a part in the database
+        public AddPartWindow(Part partToUpdate)
+        {
+            InitializeComponent();
+            //Make it so we will have a txt box for model instead of the combo box
+            cboModelName.Visibility = Visibility.Hidden;
+            txtModelName.Visibility = Visibility.Visible;
+
+            //Take the part that was passed in and fill in the text boxes
+            txtModelName.Text = partToUpdate.ModelName;
+            txtPartDescription.Text = partToUpdate.PartDescription;
+            txtPartNumber.Text = partToUpdate.PartNumber;
+            txtComments.Text = partToUpdate.Comments;
+
+            //Will we create an update button or repurpose the add button?
+            btnAddPart.Content = "Update Part";
+
+            this.part = partToUpdate;
+
+        }
+
         //This is the constructor of the class and is called during construction...
         public AddPartWindow()
         {
             InitializeComponent();
-            
-          
+
+
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
@@ -73,9 +98,8 @@ namespace Parts_Inventory_CSharp
 
         }
 
-        private void btnAddPart_Click(object sender, RoutedEventArgs e)
+        private void AddPart()
         {
-
             //Need to determine if the model name is coming from the combo box or the text box.
             var modelName = "";
 
@@ -86,7 +110,7 @@ namespace Parts_Inventory_CSharp
                 {
                     modelName = cboModelName.Items.GetItemAt(cboModelName.SelectedIndex).ToString();
                 }
-                
+
             }
             else
             {
@@ -98,8 +122,43 @@ namespace Parts_Inventory_CSharp
 
             //Now how to return the part to the other window. This will allow to get the instance of the MainWindow memory.
             ((MainWindow)Application.Current.MainWindow).returningPart = returningPart;
-            
+
             this.Close();
+
+        }
+
+        private void UpdatePart()
+        {
+            //Can we update the part from here and just have the database read when returned?
+            //If so can simplify the call back on the part
+
+            this.part.ModelName = txtModelName.Text;
+            this.part.PartDescription = txtPartDescription.Text;
+            this.part.PartNumber = txtPartNumber.Text;
+            this.part.Comments = txtComments.Text;
+
+            using (SQLiteConnection connection = new SQLiteConnection(App.dataBasePath))
+            {
+                connection.CreateTable<Part>();
+                connection.Update(part);
+            }
+
+            this.Close();
+
+        }
+
+        private void btnAddPart_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnAddPart.Content.ToString() == "Add Part")
+            {
+                AddPart();
+            }
+            else
+            {
+                UpdatePart();
+            }
+
+            
             
         }
 
