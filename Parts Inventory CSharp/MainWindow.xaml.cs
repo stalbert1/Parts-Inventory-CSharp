@@ -154,7 +154,7 @@ namespace Parts_Inventory_CSharp
 
         private void btnAddPart_Click(object sender, RoutedEventArgs e)
         {
-            if (btnAddPart.Content == "Add Part")
+            if (btnAddPart.Content.ToString() == "Add Part")
             {
                 AddPart();
             }
@@ -172,10 +172,20 @@ namespace Parts_Inventory_CSharp
             //Remember the import will not have the Id field, as it started life on the iphone app.
 
             //This will import a CSV file of parts and place them in the SQL lite database
-            var partsListImport = CSVPartParser.createPartList("partsInventory.csv");
-            
-                //Will need to determine if the part already exist in the database before allowing entry
-                using (SQLiteConnection connection = new SQLiteConnection(App.dataBasePath))
+            List<Part> partsListImport = new List<Part>();
+
+            //need to import using statement to use OpenFileDialog
+            OpenFileDialog dialog = new OpenFileDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                string filename = dialog.FileName;
+                partsListImport = CSVPartParser.createPartList(filename);
+
+            }
+
+
+            //Will need to determine if the part already exist in the database before allowing entry
+            using (SQLiteConnection connection = new SQLiteConnection(App.dataBasePath))
                 {
                 //create a variable to keep track of how many parts were added to the database
                 var numPartsAdded = 0;
@@ -237,23 +247,26 @@ namespace Parts_Inventory_CSharp
         }
 
         private void btnDeletePart_Click(object sender, RoutedEventArgs e)
-        {
-
-            
+        {         
             //Will need to ensure that a part is selected first.
             if (selectedPart != null)
             {
-                
+
                 //give a selection to do this or not.
-                MessageBox.Show($"The {selectedPart.PartDescription} will be deleted from the database.");
+                string message = $"The {selectedPart.PartDescription} will be deleted from the database.";
+                string caption = "Do you want to Delete this part?";
+                var result = MessageBox.Show(message, caption, MessageBoxButton.YesNo);
 
-                using (SQLiteConnection connection = new SQLiteConnection(App.dataBasePath))
+                if (result == MessageBoxResult.Yes)
                 {
-                    connection.CreateTable<Part>();
-                    //Will need Id field to delete.
-                    connection.Delete(selectedPart);
-                }
+                    using (SQLiteConnection connection = new SQLiteConnection(App.dataBasePath))
+                    {
+                        connection.CreateTable<Part>();
+                        //Will need Id field to delete.
+                        connection.Delete(selectedPart);
+                    }
 
+                }               
             }
 
             ReadDataBase();

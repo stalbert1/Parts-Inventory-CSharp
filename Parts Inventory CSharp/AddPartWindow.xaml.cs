@@ -25,27 +25,10 @@ namespace Parts_Inventory_CSharp
         //this will be used to update a part if passed in from the constructor.
         private Part part;
 
-        //private string test;
-
-        ////good example of using a setter.
-        //public string Test
-        //{
-        //    get { return test; }
-
-        //    set 
-        //    { 
-        //        //should I pass the entire list which is only a ref
-
-        //        test = value;
-        //        //now lets set a text box to the value
-        //        txtComments.Text = test;
-        //    }
-        //}
-
-
-
         //When the window instance is called will want a string for this CTOR
         public AddPartWindow(List<Part> partsList)
+
+
         {
             InitializeComponent();
 
@@ -61,6 +44,7 @@ namespace Parts_Inventory_CSharp
             cboModelName.ItemsSource = uModelNames;
 
         }
+
 
         //This is the constructor that will be called when you want to update a part in the database
         public AddPartWindow(Part partToUpdate)
@@ -83,6 +67,7 @@ namespace Parts_Inventory_CSharp
 
         }
 
+
         //This is the constructor of the class and is called during construction...
         public AddPartWindow()
         {
@@ -91,12 +76,14 @@ namespace Parts_Inventory_CSharp
 
         }
 
+
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             //Console.WriteLine(test);
             this.Close();
 
         }
+
 
         private void AddPart()
         {
@@ -127,6 +114,7 @@ namespace Parts_Inventory_CSharp
 
         }
 
+
         private void UpdatePart()
         {
             //Can we update the part from here and just have the database read when returned?
@@ -146,6 +134,7 @@ namespace Parts_Inventory_CSharp
             this.Close();
 
         }
+
 
         private void btnAddPart_Click(object sender, RoutedEventArgs e)
         {
@@ -181,5 +170,7 @@ namespace Parts_Inventory_CSharp
             }
 
         }
+
+
     }
 }
