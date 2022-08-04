@@ -166,6 +166,23 @@ namespace Parts_Inventory_CSharp
 
         }
 
+        //Added on 8/3/22... Ability to copy selected part to the windows clipboard. This is to add the part description + part number to the clipboard for adding to gameplan.
+
+        private void btnCopyToClip_Click(object sender, RoutedEventArgs e)
+        {
+
+            //selected part will only be valid if a part is selected.
+            if (selectedPart != null)
+            {
+                //This will copy the selected item to the clipboard
+                Clipboard.SetText(selectedPart.PartDescription + " " + selectedPart.PartNumber);
+            }
+            
+            
+        }
+
+
+
         private void btnImportCsv_Click(object sender, RoutedEventArgs e)
         {
 
@@ -284,5 +301,7 @@ namespace Parts_Inventory_CSharp
 
 
         }
+
+       
     }
 }
